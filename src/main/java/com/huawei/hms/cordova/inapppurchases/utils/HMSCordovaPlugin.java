@@ -31,7 +31,6 @@ import org.apache.cordova.CordovaInterface;
 public class HMSCordovaPlugin extends CordovaPlugin {
 
     private final static String TAG = HMSCordovaPlugin.class.getSimpleName();
-    private boolean isInitCalled = false;
 
     @Override
     public void pluginInitialize() {
@@ -64,13 +63,8 @@ public class HMSCordovaPlugin extends CordovaPlugin {
     }
 
     private void init() {
-        if (isInitCalled) {
-            return;
-        }
-
         try {
             runJS(cordova, webView, "hmsSetConstants('" + getServiceName() + "', " + getConstants().toString() + ")");
-            isInitCalled = true;
         } catch (JSONException ex) {
             Log.e(TAG, "Error while exporting constants on " + getServiceName() + ". Details: " + ex.getMessage());
         }
