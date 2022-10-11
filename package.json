@@ -1,10 +1,21 @@
 {
-  "name": "cordova-plugin-hms-inapppurchases",
-  "version": "4.0.3",
-  "description": "cordova-plugin-hms-inapppurchases",
+  "name": "@hmscore/cordova-plugin-hms-iap",
+  "description": "Cordova HMS IAP Plugin",
+  "version": "6.4.0-301",
+  "main": "./www/index.js",
   "types": "./types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HMS-Core/hms-cordova-plugin.git",
+    "directory": "cordova-plugin-hms-iap"
+  },
+  "bugs": "https://github.com/HMS-Core/hms-cordova-plugin/issues",
+  "homepage": "https://developer.huawei.com/consumer/en/doc/overview/HMS-Core-Plugin",
+  "license": "Apache-2.0",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
   "cordova": {
-    "id": "cordova-plugin-hms-inapppurchases",
+    "id": "cordova-plugin-hms-iap",
     "platforms": [
       "android"
     ]
@@ -12,35 +23,36 @@
   "keywords": [
     "cordova",
     "ecosystem:cordova",
-    "cordova-android"
+    "cordova-android",
+    "iap",
+    "inapppurchases",
+    "huawei-iap",
+    "hms-iap",
+    "huawei-inapppurchases",
+    "hms-inapppurchases",
+    "hms",
+    "huawei"
   ],
-  "scripts": {
-    "test": "npm run eslint",
-    "eslint": "node node_modules/eslint/bin/eslint www && node node_modules/eslint/bin/eslint src && node node_modules/eslint/bin/eslint tests"
-  },
-  "license": "Apache-2.0",
-  "engines": [{
-    "name": "cordova",
-    "version": ">=3.0.0"
-  }],
-  "devDependencies": {
-    "eslint": "^3.19.0",
-    "eslint-config-semistandard": "^11.0.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1"
-  },
   "files": [
-    "hooks/**",
-    "resources/**",
-    "src/**",
-    "www/**",
-    "LICENCE",
+    "hooks",
+    "ionic-native",
+    "src",
+    "types",
+    "www",
+    "LICENSE",
     "package.json",
     "plugin.xml",
     "README.md"
-  ]
-
+  ],
+  "dependencies": {
+    "@types/cordova": "0.0.34"
+  },
+  "devDependencies": {
+    "typescript": "3.9.5"
+  },
+  "scripts": {
+    "build:core": "node ./node_modules/typescript/bin/tsc",
+    "build": "npm run build:core",
+    "watch": "node ./node_modules/typescript/bin/tsc --watch"
+  }
 }

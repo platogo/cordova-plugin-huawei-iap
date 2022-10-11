@@ -1,401 +1,360 @@
+# Cordova Plugin HMS IAP
 
-# CORDOVA PLUGIN HMS ANALYTICS
+<p align="center">
+  <h1 align="center">Cordova HMS Iap</h1>
+</p>
 
-## Contents
+<p align="center">
+  <a href="https://www.npmjs.com/package/@hmscore/cordova-plugin-hms-iap"><img src="https://img.shields.io/npm/dm/@hmscore/cordova-plugin-hms-iap?color=%23007EC6&style=for-the-badge" alt="downloads"></a>
+  <a href="https://www.npmjs.com/package/@hmscore/cordova-plugin-hms-iap"><img src="https://img.shields.io/npm/v/@hmscore/cordova-plugin-hms-iap?color=%23ed2a1c&style=for-the-badge" alt="NPM version"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/npm/l/@hmscore/cordova-plugin-hms-iap.svg?color=%3bcc62&style=for-the-badge" alt="License"></a>
+</p>
 
-1. Introduction
+---
 
-2. Installation Guide
+This plugin enables communication between Huawei Iap SDK and Cordova platform. It exposes all
+functionality provided by Huawei Iap SDK.
 
-3. Cordova Plugin API Method Definition
-
-4. Configure Description
-
-5. Licensing and Terms
+[> Learn More](https://developer.huawei.com/consumer/en/doc/development/HMS-Plugin-Guides/introduction-0000001126692133?ha_source=hms1)
 
 ## 1. Introduction
 
-The Cordova Plugin code encapsulates the Huawei in-app purchases client interface. It provides many APIs for your reference or use.
+This plugin enables communication between Huawei IAP SDK and Cordova platform. It exposes all
+functionality provided by Huawei IAP SDK.
 
-The Cordova Plugin code package is described as follows:  
-
-**src/main/com/huawei/hms/cordova/inapppurchases**: core layer, bridging InAppPurchasesSDK bottom-layer code;
-
-**www/HMSInAppPurchases.js**: external interface definition layer, which is used to define interface classes or reference files.
+---
 
 ## 2. Installation Guide
 
-1. Download the Cordova In-App Purchases Plugin.
+Before you get started, you must register as a HUAWEI Developer and complete identity verification
+on the [HUAWEI Developer](https://developer.huawei.com/consumer/en/) website. For details, please
+refer to [Register a HUAWEI ID](https://developer.huawei.com/consumer/en/doc/10104?ha_source=hms1).
 
-2. Add Platform To Project.
+### 2.1. Creating a Project in AppGallery Connect
 
-   ***`cordova platform add android`***
+Creating an app in AppGallery Connect is required in order to communicate with the Huawei services.
+To create an app, perform the following steps:
 
-3. Run the following command in the root directory of the Cordova project:
+1. Sign in
+   to [AppGallery Connect](https://developer.huawei.com/consumer/en/service/josp/agc/index.html?ha_source=hms1)
+   and select **My projects**.
+2. Select your project from the project list or create a new one by clicking the **Add Project**
+   button.
+3. Go to **Project Setting** > **General information**, and click **Add app**.
+   - If an app exists in the project and you need to add a new one, expand the app selection area
+     on the top of the page and click **Add app**.
+4. On the **Add app** page, enter the app information, and click **OK**.
 
-   ***`cordova plugin add PATH_TO_CORDOVA_INAPP_PURCHASES_PLUGIN`***
+### 2.2. Configuring the Signing Certificate Fingerprint and Obtaining agconnect-services.json
 
-4. Check whether the Cordova In-App Purchases Plugin is successfully added to Plugin folder in the root directory of the Cordova project.
+A signing certificate fingerprint is used to verify the authenticity of an app when it attempts to
+access an HMS Core (APK) through the HMS SDK. Before using the HMS Core (APK), you must locally
+generate a signing certificate fingerprint and configure it in the **AppGallery Connect**. You can
+refer to 3rd and 4th steps
+of [Generating a Signing Certificate](https://developer.huawei.com/consumer/en/codelab/HMSPreparation/index.html#2?ha_source=hms1)
+Codelab tutorial for the certificate generation. Perform the following steps after you have
+generated the certificate.
 
-5. Add agconnect-services.json and jks file to root directory. You can see how to create jks file in this [link](https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/iap-configuring-appGallery-connect).
+1. Sign in
+   to [AppGallery Connect](https://developer.huawei.com/consumer/en/service/josp/agc/index.html?ha_source=hms1)
+   and select your project from **My Projects**. Then go to **Project Setting** > **General
+   information**. In the **App information** field, click the icon next to SHA-256 certificate
+   fingerprint, and enter the obtained **SHA-256 certificate fingerprint**.
+2. After completing the configuration, click **OK** to save the changes. (Check mark icon)
+3. In the same page, click **agconnect-services.json** button to download the configuration file.
 
-6. Add build.json file to your project's root.
+### 2.3. Enabling Required Services
 
-7. Enable In-App Purchases API on AppGallery Connect.
+To use HUAWEI IAP, you first need
+to **[enable the IAP service](https://developer.huawei.com/consumer/en/doc/distribution/app/agc-enable_service#h1-1574822945685?ha_source=hms1)**
+and
+also **[set IAP parameters](https://developer.huawei.com/consumer/en/doc/distribution/app/agc-enable_service#h1-1587376818335?ha_source=hms1)**
+.
 
-8. Add some products on AppGallery Connect.
+> **NOTE:** Please save the public key obtained during the process of enabling the IAP service. It will be used for verifying the signature of data returned by the IAP SDK, ensuring that the data is not tampered with.
 
-9. Then run the Cordova app.
+### 2.4. Cordova
 
-    ***`cordova run android`***
+1. Install Cordova CLI if haven't done before.
 
-## 3. Cordova Plugin API method definition
+   ```bash
+   npm install -g cordova
+   ```
 
-|Method(using Promise) |Method(using Callback) |Definition |
-|----------------------------|------------------------------|--------------------------------------------------------------|
-[`isSandboxReady`](#issandboxready-or-cbissandboxreadysuccess-error)             |[`cbIsSandboxReady`](#issandboxready-or-cbissandboxreadysuccess-error)            |This API is called to check whether the sign-in HUAWEI ID and app APK version meets the requirements of the sandbox testing(sandbox testing is not available for individual developers outside of China). |
-[`isEnvironmentReady`](#isenvironmentready-or-cbisenvironmentreadysuccess-error) |[`cbIsEnvironmentReady`](#isenvironmentready-or-cbisenvironmentreadysuccess-error)        |This API is called to check whether the currently signed-in HUAWEI ID is located in a country or region where HUAWEI IAP is available. |
-[`obtainOwnedPurchases`](#obtainownedpurchasesownedpurchasesrequest-or-cbobtainownedpurchasesownedpurchasesrequest-success-error)       |[`cbObtainOwnedPurchases`](#obtainownedpurchasesownedpurchasesrequest-or-cbobtainownedpurchasesownedpurchasesrequest-success-error)      |This API is called to query information about all purchased in-app products, including consumables, non-consumables, and auto-renewable subscriptions. |
-[`obtainProductInfo`](#obtainproductinfoproductinforequest-or-cbobtainproductinfoproductinforequestsuccess-error)          |[`cbObtainProductInfo`](#obtainproductinfoproductinforequest-or-cbobtainproductinfoproductinforequestsuccess-error)          |This API is called to obtain in-app product details configured in AppGallery Connect. |
-[`createPurchaseIntent`](#createpurchaseintentpurchaseintentrequest-or-cbcreatepurchaseintentpurchaseintentrequestsuccess-error)       |[`cbCreatePurchaseIntent`](#createpurchaseintentpurchaseintentrequest-or-cbcreatepurchaseintentpurchaseintentrequestsuccess-error)      |This API is called to create orders for PMS products, including consumables, non-consumables, and subscriptions. |
-[`consumeOwnedPurchase`](#consumeownedpurchaseconsumeownedpurchaserequest-or-cbconsumeownedpurchaseconsumeownedpurchaserequestsuccess-error)       |[`cbConsumeOwnedPurchase`](#consumeownedpurchaseconsumeownedpurchaserequest-or-cbconsumeownedpurchaseconsumeownedpurchaserequestsuccess-error)      |This API is called to consume a consumable after the consumable is delivered to a user who has completed payment. |
-[`obtainOwnedPurchaseRecord`](#obtainownedpurchaserecordownedpurchasesrequest-or-cbobtainownedpurchaserecordownedpurchasesrequest-success-error)  |[`cbObtainOwnedPurchaseRecord`](#obtainownedpurchaserecordownedpurchasesrequest-or-cbobtainownedpurchaserecordownedpurchasesrequest-success-error) |This API is called to obtain the historical consumption information about a consumable or all subscription receipts of a subscription. |
+2. Create a new Cordova project or use existing Cordova project.
 
-## Public Functions
+   - To create new Cordova project, you can
+     use **`cordova create path [id [name [config]]] [options]`** command. For more details please
+     follow [CLI Reference - Apache Cordova](https://cordova.apache.org/docs/en/latest/reference/cordova-cli/index.html#cordova-create-command)
+     .
 
-### **`isSandboxReady()`** or **`cbIsSandboxReady(success, error)`**
+3. Update the widget **`id`** property which is specified in the **`config.xml`** file. It must be
+   same with **client > package_name** value of the **`agconnect-services.json`** file.
 
-This API is called to check whether the sign-in HUAWEI ID and app APK version meets the requirements of the sandbox testing(sandbox testing is not available for individual developers outside of China).
+4. Add the **Android platform** to the project if haven't done before.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`success` | Function | A callback function. It is called when function is executed successfully.|
-|`error`| Function | A callback function. It is called when function is failed.|
+   ```bash
+   cordova platform add android
+   ```
 
----
+5. Install `HMS IAP plugin` to the project.
 
-### **`isEnvironmentReady()`** or **`cbIsEnvironmentReady(success, error)`**
+   ```bash
+   cordova plugin add @hmscore/cordova-plugin-hms-iap
+   ```
 
-This API is called to check whether the currently signed-in HUAWEI ID is located in a country or region where HUAWEI IAP is available.
+6. Copy **`agconnect-services.json`** file to **`<project_root>/platforms/android/app`** directory.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`success` | Function | A callback function. It is called when function is executed successfully. It gets an argument of [`IsEnvReadyResult`](#isenvreadyresult) object|
-|`error`| Function | A callback function. It is called when function is failed. It gets an argument of [`Status`](#status) object|
+7. Add **`keystore(.jks)`** and **`build.json`** files to your project's root directory.
 
----
+   - You can refer to 3rd and 4th steps
+     of [Generating a Signing Certificate](https://developer.huawei.com/consumer/en/codelab/HMSPreparation/index.html#2?ha_source=hms1)
+     Codelab tutorial page for generating keystore file.
 
-### **`obtainOwnedPurchases(ownedPurchasesRequest)`** or **`cbObtainOwnedPurchases(ownedPurchasesRequest, success, error)`**
+   - Fill **`build.json`** file according to your keystore. For example:
 
-This API is called to query information about all purchased in-app products, including consumables, non-consumables, and auto-renewable subscriptions.
-
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`ownedPurchasesRequest` |[`OwnedPurchasesReq`](#ownedpurchasesreq) | Request object that must have `priceType` as key and integer(`0` for Consumable or `1` for Non-Consumable or `2` for Subscription type of product) as value. Ex: `{ 'priceType': 1 }`|
-|`success` | Function | A callback function. It is called when function is executed successfully. It gets an argument of [`OwnedPurchasesResult`](#ownedpurchasesresult) object|
-|`error`| Function | A callback function. It is called when function is failed. It gets an argument of [`Status`](#status) object|
-
----
-
-### **`obtainProductInfo(productInfoRequest)`** or **`cbObtainProductInfo(productInfoRequest,success, error)`**
-
-This API is called to obtain in-app product details configured in AppGallery Connect.
-
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`productInfoRequest` | [`ProductInfoReq`](#productinforeq) | Request object that must have `priceType` as key and integer(`0` for Consumable or `1` for Non-Consumable or `2` for Subscription type of product) as value. and `productList` as key and list of strings of ids of products as value. Ex: `{ 'priceType': 0, 'productList': ['consumable_1','consumable_2'] }`|
-|`success` | Function | A callback function. It is called when function is executed successfully. It gets an argument of [`ProductInfoResult`](#productinforesult) object|
-|`error`| Function | A callback function. It is called when function is failed. It gets an argument of [`Status`](#status) object|
-
----
-
-### **`createPurchaseIntent(purchaseIntentRequest)`** or **`cbCreatePurchaseIntent(purchaseIntentRequest,success, error)`**
-
-This API is called to create orders for PMS products, including consumables, non-consumables, and subscriptions.
-
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`purchaseIntentRequest` | [`PurchaseIntentReq`](#purchaseintentreq) | Request object that must have `priceType` as key and integer(`0` for Consumable or `1` for Non-Consumable or `2` for Subscription type of product) as value, and `productId` as key and string of id of the product to be purchased as value, may have `developerPayload` as key and string decided by developer as value  Ex: `{ 'priceType': 0, 'productId': 'consumable_1', 'developerPayload': 'HMSDevPayload'}`|
-|`success` | Function | A callback function. It is called when function is executed successfully. It gets an argument of [`PurchaseResultInfo`](#purchaseresultinfo) object|
-|`error`| Function | A callback function. It is called when function is failed. It gets an argument of [`Status`](#status) object|
-
----
-
-### **`consumeOwnedPurchase(consumeOwnedPurchaseRequest)`** or **`cbConsumeOwnedPurchase(consumeOwnedPurchaseRequest,success, error)`**
-
-This API is called to consume a consumable after the consumable is delivered to a user who has completed payment.
-
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`consumeOwnedPurchaseRequest` | [`ConsumeOwnedPurchaseReq`](#consumeOwnedPurchaseReq) | Request object that must have `inAppPurchaseData` as key and JSON string that contains purchase order details of the product to be consumed(it can be obtained by using result object of `createPurchaseIntent`  or `obtainOwnedPurchases` functions ) as value, may have `developerChallenge` as key and string decided by developer as value  Ex: `{ 'inAppPurchaseData': "{'autoRenewing':false,'orderId':'0000.000','packageName':'com.mycompany.aa.bb.cc.yy.demo','applicationId':000000,'kind':0,'productId':'consumable_1','productName':'Consumable Product 1','purchaseTime':000000,'purchaseTimeMillis':000000,'purchaseState':0,'developerPayload':'HMSDevPayload','purchaseToken':'012345678cdef.1.0123bcdef','developerChallenge':'HMSDevChallenge','responseCode':'0','consumptionState':1,'confirmed':1,'currency':'TRY','price':6,'country':'TR','payOrderId':'WPXXXXX','payType':'24'}, 'developerChallenge': 'HMSDevChallenge'}`|
-|`success` | Function | A callback function. It is called when function is executed successfully. It gets an argument of [`ConsumeOwnedPurchaseResult`](#consumeownedpurchaseresult) object|
-|`error`| Function | A callback function. It is called when function is failed. It gets an argument of [`Status`](#status) object|
-
----
-
-### **`obtainOwnedPurchaseRecord(ownedPurchasesRequest)`** or **`cbObtainOwnedPurchaseRecord(ownedPurchasesRequest, success, error)`**
-
-This API is called to obtain the historical consumption information about a consumable or all subscription receipts of a subscription.
-
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`ownedPurchasesRequest` | [`OwnedPurchasesReq`](#ownedpurchasesreq) | Request object that must have `priceType` as key and integer(`0` for Consumable or `1` for Non-Consumable or `2` for Subscription type of product) as value. Ex: `{ 'priceType': 1 }`|
-|`success` | Function | A callback function. It is called when function is executed successfully. It gets an argument of [`OwnedPurchasesResult`](#ownedpurchasesresult) object |
-|`error`| Function | A callback function. It is called when function is failed. It gets an argument of [`Status`](#status) object|
-
----
-
-### Example usage of the functions
-
-#### Using Callback
-
-```javascript
-HMSInAppPurchases.cbObtainOwnedPurchases({
-   priceType:1,
-   },
-   (successMessage)=>{ //Success callback
-      console.log(successMessage);
-   },
-   (errorMessage)=>{ //Error callback
-      console.log(errorMessage);
+   ```json
+   {
+     "android": {
+       "debug": {
+         "keystore": "<keystore_file>.jks",
+         "storePassword": "<keystore_password>",
+         "alias": "<key_alias>",
+         "password": "<key_password>"
+       },
+       "release": {
+         "keystore": "<keystore_file>.jks",
+         "storePassword": "<keystore_password>",
+         "alias": "<key_alias>",
+         "password": "<key_password>"
+       }
+     }
    }
-)
-```
+   ```
 
-#### Using Promise
+8. Run the app.
 
-```javascript
-try {
-   let message = await HMSInAppPurchases.obtainOwnedPurchases({
-      priceType: 1
-   });
-   console.log(message);
-} catch (err) {
-   defaultErrorHandler(err);
-}
-```
+   ```bash
+   cordova run android --device
+   ```
 
----
+### 2.5 Ionic
 
-## Data Types
+1. Install Ionic CLI and other required tools if haven't done before.
 
-### **`Status`**
+   ```bash
+   npm install -g @ionic/cli cordova-res native-run
+   ```
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`errorString` | `string` | The error description.|
-|`statusCode` | `integer` | The status code. `0`: success, `1`: failure, `404`: no resource found, and `500`: internal error.|
-|`statusMessage` | `string` | The status description.|
-|`hasResolution` | `boolean` | True if whether there is a pending intent that will resolve the issue.|
-|`isCanceled` | `boolean` | True if the process cancelled.|
-|`isInterrupted` | `boolean` | True if the process interrupted.|
-|`isSuccess` | `boolean` | True if the process succeeded.|
+2. Create a new Ionic project or use existing Ionic project.
 
----
+   - To create a new Ionic project, you can use **`ionic start <name> <template> [options]`**
+     command. For more details please
+     follow [ionic start - Ionic Documentation](https://ionicframework.com/docs/cli/commands/start)
+     .
 
-### **`OwnedPurchasesReq`**
+#### 2.5.1. With Cordova Runtime
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`priceType` | `integer` | The type of a product.|
+1. Enable the **Cordova integration** if haven't done before.
 
----
+   ```bash
+   ionic integrations enable cordova
+   ```
 
-### **`ProductInfoReq`**
+2. Update the widget **`id`** property which is specified in the **`config.xml`** file. It must be
+   same with **client > package_name** value of the **`agconnect-services.json`** file.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`priceType` | `integer` | The type of a product to be queried.|
-|`productList` | `string[]` | The ID list of products to be queried.|
+3. Add the **Android platform** to the project if haven't done before.
 
----
+   ```bash
+   ionic cordova platform add android
+   ```
 
-### **`PurchaseIntentReq`**
+4. Install `HMS IAP plugin` to the project.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`priceType` | `integer` | The type of a product.|
-|`productId` | `string` | The ID of the product to be paid.|
-|`developerPayload` | `string` | The information stored on the merchant side.|
+   ```bash
+   ionic cordova plugin add @hmscore/cordova-plugin-hms-iap
+   ```
 
----
+5. If you want to enable Ionic Native support then run the following command.
 
-### **`ConsumeOwnedPurchaseReq`**
+   ```bash
+   npm install @ionic-native/core @hmscore/ionic-native-hms-iap
+   ```
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`inAppPurchaseData` | `string` | JSON string of [`InAppPurchaseData`](#inapppurchasedata) object.|
-|`developerChallenge` | `string` | The challenge customized by a developer.|
+6. Copy **`agconnect-services.json`** file to **`<project_root>/platforms/android/app`** directory.
 
----
+7. Add **`keystore(.jks)`** and **`build.json`** files to your project's root directory.
 
-### **`IsSandboxActivatedResult`**
+   - You can refer to 3rd and 4th steps
+     of [Generating a Signing Certificate](https://developer.huawei.com/consumer/en/codelab/HMSPreparation/index.html#2?ha_source=hms1)
+     Codelab tutorial page for generating keystore file.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`returnCode` | `integer` | Query result code.|
-|`errMsg` | `string` | Result code description.|
-|`isSandboxUser` | `boolean` | True if A sandbox account is used.|
-|`isSandboxApk` | `boolean` | True if the app APK version meets the requirements of the sandbox testing.|
-|`versionInApk` | `string` | App version information.|
-|`versionFrMarket` | `string` | The information about the app version that is last released in HUAWEI AppGallery Connect.|
-|`status` | [`Status`](#status) | Status based on the task processing result.|
+   - Fill **`build.json`** file according to your keystore. For example:
 
----
+   ```json
+   {
+     "android": {
+       "debug": {
+         "keystore": "<keystore_file>.jks",
+         "storePassword": "<keystore_password>",
+         "alias": "<key_alias>",
+         "password": "<key_password>"
+       },
+       "release": {
+         "keystore": "<keystore_file>.jks",
+         "storePassword": "<keystore_password>",
+         "alias": "<key_alias>",
+         "password": "<key_password>"
+       }
+     }
+   }
+   ```
 
-### **`IsEnvReadyResult`**
+8. Build Ionic app to generate resource files.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`returnCode` | `integer` | Query result code.|
-|`status` | [`Status`](#status) | Status based on the task processing result.|
+   ```bash
+   ionic build
+   ```
 
----
+9. Run the app.
 
-### **`OwnedPurchasesResult`**
+   ```bash
+   ionic cordova run android --device
+   ```
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`continuationToken` | `string` | Data location flag.|
-|`errMsg` | `string` | Result code description.|
-|`itemList` | `string[]` | The ID list of found products.|
-|`inAppPurchaseDataList` | `string[]` |  The information about products that have been purchased but not consumed or about all existing subscription relationships of users, which is returned using the [`obtainOwnedPurchases`](#obtainownedpurchasesownedpurchasesrequest-or-cbobtainownedpurchasesownedpurchasesrequest-success-error) method or the historical consumable information or all subscription receipts, which are returned using the [`obtainOwnedPurchaseRecord`](#obtainownedpurchaserecordownedpurchasesrequest-or-cbobtainownedpurchaserecordownedpurchasesrequest-success-error) method. The value is an array of JSON string of [`InAppPurchaseData`](#inapppurchasedata)|
-|`inAppSignature` | `string[]` |  a signature character string of each character string in `inAppPurchaseDataList`|
-|`placedInappPurchaseDataList` | `string[]` | Subscription relationship information about a user who has performed subscription switchover. The value is an array of JSON string of [`InAppPurchaseData`](#inapppurchasedata) object |
-|`placedInappSignatureList` | `string[]` | The signature character string of each character string in `placedInappPurchaseDataList`|
-|`returnCode` | `integer` | Query result code.|
-|`status` | [`Status`](#status) | Status based on the task processing result.|
+#### 2.5.2. With Capacitor Runtime
 
----
+1. Enable the **Capacitor integration** if haven't done before.
 
-### **`ProductInfoResult`**
+   ```bash
+   ionic integrations enable capacitor
+   ```
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`returnCode` | `integer` | Query result code.|
-|`errMsg` | `string` | Result code description.|
-|`productInfoList` | [`ProductInfo[]`](#productinfo) | The list of in-app products that are successfully found.|
-|`status` | [`Status`](#status) | Status based on the task processing result.|
+2. Initialize **Capacitor** if haven't done before.
 
----
+   ```bash
+   npx cap init [appName] [appId]
+   ```
 
-### **`PurchaseIntentResult`**
+   - For more details please
+     follow [Initialize Capacitor with your app information](https://capacitorjs.com/docs/getting-started/with-ionic#initialize-capacitor-with-your-app-information)
+     .
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`returnCode` | `integer` | Query result code.|
-|`errMsg` | `string` | Result code description.|
-|`paymentData` | `string` | JSON string that contains purchase order details.|
-|`paymentSignature` | `string` | The signature character string generated after purchase data. |
-|`status` | [`Status`](#status) | Status based on the task processing result.|
+3. Update the **`appId`** property which is specified in the **`capacitor.config.json`** file
+   according to your project. It must be same with **client > package_name** value of
+   the **`agconnect-services.json`** file.
 
----
+4. Install `HMS IAP plugin` to the project.
 
-### **`ConsumeOwnedPurchaseResult`**
+   ```bash
+   npm install @hmscore/cordova-plugin-hms-iap
+   ```
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`consumePurchaseData` | `string` | JSON string that contains consumption result data.|
-|`dataSignature` | `string` | The signature character string generated after consumption data. |
-|`errMsg` | `string` | Result code description.|
-|`returnCode` | `integer` | Query result code.|
-|`status` | [`Status`](#status) | Status based on the task processing result.|
+5. If you want to enable Ionic Native support then run the following command.
 
----
+   ```bash
+   npm install @ionic-native/core @hmscore/ionic-native-hms-iap
+   ```
 
-### **`PurchaseResultInfo`**
+6. Build Ionic app to generate resource files.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`returnCode` | `integer` | Query result code.|
-|`errMsg` | `string` | Result code description.|
-|`inAppPurchaseData` | `string` | JSON string of [`InAppPurchaseData`](#inapppurchasedata) object that contains purchase order details.|
-|`inAppDataSignature` | `string` |  The signed character string generated by signing the purchase data.|
+   ```bash
+   ionic build
+   ```
 
----
+7. Add the **Android platform** to the project if haven't done before.
 
-### **`ProductInfo`**
+   ```bash
+   npx cap add android
+   ```
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-|`productId` | `string` | ID of the product |
-|`priceType` | `integer` | The type of the product |
-|`price` | `string` | Displayed price of a product. |
-|`microsPrice` | `integer` | Product price in micro unit. |
-|`originalLocalPrice` | `string` | Original price of a product |
-|`originalMicroPrice` | `integer` | Original price of a product in micro unit. |
-|`currency` | `string` | Product currency |
-|`productName` | `string` | Product name |
-|`productDesc` | `string` | Product description. |
-|`subPeriod` | `string` | Unit of a subscription period. |
-|`subSpecialPrice` | `string` | Promotional price of a subscription. |
-|`subSpecialPriceMicros` | `integer` | Promotional price of a subscription in micro unit. |
-|`subSpecialPeriod` | `string` | Promotion period unit of a subscription |
-|`subSpecialPeriodCycles` | `integer` | Promotion period unit of a subscription |
-|`subFreeTrialPeriod` | `string` | Free trial period of a subscription. |
-|`subGroupId` | `string` | ID of the subscription group to which a subscription belongs. |
-|`subGroupTitle` | `string` | Description of the subscription group to which a subscription belongs. |
-|`subProductLevel` | `integer` | Level of a subscription in its subscription group. |
+8. Copy **`keystore(.jks)`** and **`agconnect-services.json`** files
+   to **`<project_root>/android/app`** directory.
 
----
+   - You can refer to 3rd and 4th steps
+     of [Generating a Signing Certificate](https://developer.huawei.com/consumer/en/codelab/HMSPreparation/index.html#2?ha_source=hms1)
+     Codelab tutorial page for generating keystore file.
 
-### **`InAppPurchaseData`**
+9. Open the **`build.gradle`** file in the **`<project_root>/android/app`** directory.
 
-| Parameter | Type | Definition |
-|-----------|--------------------|-----------------------------|
-| `appInfo` | `string` | App information |
-| `applicationId` | `number` | Application ID |
-| `cancelledSubKeepDays` | `integer` | Number of days for retaining a subscription relationship after the subscription is canceled. |
-| `cancelReason` | `integer` | Cause of subscription cancellation. |
-| `cancelTime` | `number` | Timestamp of the subscription cancellation time. |
-| `country` | `string` | Country code, which is used to identify a country. |
-| `currency` | `string` | Currency |
-| `daysLasted` | `number` | Days of paid service, excluding the free trial period and promotion period. |
-| `developerPayload` | `string` | The payload provided by developer. |
-| `expirationDate` | `number` | Timestamp of the subscription expiration time. |
-| `expirationIntent` | `integer` | Reason why a subscription expires. |
-| `introductoryFlag` | `integer` | Indicates whether a subscription is in the promotion period. |
-| `lastOrderId` | `string` | Order ID generated by the payment server during fee deduction on the previous renewal date. |
-| `notifyClosed` | `integer` | Indicates whether a user has disabled subscription notifications. |
-| `numOfDiscount` | `number` | Number of successful renewal periods with promotion. |
-| `numOfPeriods` | `number` | Number of successful standard renewal periods (that is, renewal periods without promotion). |
-| `orderID` | `string` | Order ID on the Huawei payment server, which uniquely identifies a transaction and is generated by the Huawei payment server during payment. |
-| `oriPurchaseTime` | `number` | Timestamp of the first fee deduction time, milliseconds since 00:00:00 on January 1, 1970. |
-| `packageName` | `string` | App installation package name. |
-| `price` | `number` | Value after the actual price of an in-app product is multiplied by 100. |
-| `priceConsentStatus` | `integer` | User opinion on the price increase of an in-app product. |
-| `productGroup` | `string` | ID of the subscription group to which a subscription benumbers |
-| `productId` | `string` | In-app product ID. |
-| `productName` | `string` | In-app product name. |
-| `purchaseState` | `integer` | Transaction status. |
-| `purchaseTime` | `number` | Timestamp of the purchase time, milliseconds since 00:00:00 on January 1, 1970. |
-| `purchaseToken` | `string` | Purchase token, which uniquely identifies the mapping between an in-app product and a user and is generated by the Huawei payment server when the payment is complete. |
-| `purchaseType` | `integer` | Purchase type. |
-| `quantity` | `integer` | Purchase quantity. |
-| `renewPrice` | `number` | Price used upon the next renewal. |
-| `renewStatus` | `integer` | Renewal status. |
-| `retryFlag` | `integer` | Indicates whether the system still tries to renew an expired subscription. |
-| `subscriptionId` | `string` | Subscription ID. |
-| `trialFlag` | `integer` | Indicates whether a subscription is in the free trial period. |
-| `isAutoRenewing` | `boolean` | Purchase auto renewing status. |
-| `isSubValid` | `boolean` | Valid if a user has been charged for an in-app product, the in-app product has not expired, and no refund has been made. |
-| `cancelledSubKeepDays` | `integer` | Number of days for retaining a subscription relationship after the subscription is canceled. |
-| `kind` | `integer` | Product type |
-| `developerChallenge` | `string` | Challenge defined when an app initiates a consumption request, which uniquely identifies the consumption request. This parameter exists only for one-off products. |
-| `consumptionState` | `integer` | Consumption status, which exists only for one-off products. |
-| `payOrderId` | `string` | Merchant ID, which uniquely identifies a transaction and is generated by the Huawei IAP server during payment. |
-| `payType` | `string` | Payment method.  |
-| `deferFlag` | `integer` | Indicates whether to postpone the settlement date. The value 1 indicates that the settlement date is postponed. |
-| `oriSubscriptionId` | `string` | Original subscription ID. |
-| `cancelWay` | `integer` | Subscription cancellation initiator. |
-| `cancellationTime` | `number` | Subscription cancellation time in UTC. |
-| `resumeTime` | `number` | Time when a subscription is resumed. |
----
+   - Add `signingConfigs` entry to the **android** section and modify it according to your
+     keystore.
 
-## 4. Configure Description
+   - Enable `signingConfig` configuration for **debug** and **release** flavors.
 
-No
-  
-## 5. Licensing and Terms
+   ```groovy
+   ...
 
-Apache 2.0 license.
+   android {
+
+       ...
+
+       // Modify signingConfigs according to your keystore
+       signingConfigs {
+           config {
+               storeFile file('<keystore_file>.jks')
+               storePassword '<keystore_password>'
+               keyAlias '<key_alias>'
+               keyPassword '<key_password>'
+           }
+       }
+       buildTypes {
+           debug {
+               signingConfig signingConfigs.config // Enable signingConfig for debug flavor
+           }
+           release {
+               signingConfig signingConfigs.config // Enable signingConfig for release flavor
+               minifyEnabled false
+               proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+           }
+       }
+   }
+
+   ...
+   ```
+
+10. Open the **`build.gradle`** file in the **`<project_root>/android`** directory. Add **Huawei's
+    maven repositories** and **agconnect classpath** to the file.
+
+    ```groovy
+    buildscript {
+        repositories {
+            /*
+                <Other repositories>
+            */
+            maven { url 'https://developer.huawei.com/repo/' }
+        }
+        dependencies {
+            /*
+                <Other dependencies>
+            */
+            classpath 'com.huawei.agconnect:agcp:1.4.2.301'
+        }
+    }
+
+    /*
+        <Other build.gradle entries>
+    */
+
+    allprojects {
+        repositories {
+            /*
+                <Other repositories>
+            */
+            maven { url 'https://developer.huawei.com/repo/' }
+        }
+    }
+    ```
+
+11. Updates dependencies, and copy any web assets to your project.
+
+    ```bash
+    npx cap sync
+    ```
+
+12. Open the project in Android Studio and run it.
+
+    ```bash
+    npx cap open android
+    ```
